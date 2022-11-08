@@ -481,7 +481,23 @@ class LoadImagesAndLabels(Dataset):
 
         # Check cache
         self.label_files = img2label_paths(self.im_files)  # labels
-        cache_path = (p if p.is_file() else Path(self.label_files[0]).parent).with_suffix('.cache')
+        # cache_path = (p if p.is_file() else Path(self.label_files[0]).parent).with_suffix('.cache')
+        
+        # MyAdd
+        a = str(Path(self.label_files[0]).parent)
+        b = str(Path(self.label_files[0]).parent.parent)
+        c = ''
+        for i in range(len(a)):
+            if i < (len(b)):
+                if a[i] != b[i]:
+                    c += a[i]
+            else:
+                c += a[i]
+        subpath = c[1:]
+        cache_path = Path('/kaggle/working/yolov5-6.2/data/cache').joinpath(subpath).with_suffix('.cache')
+        del a,b,c,subpath
+        # endof MyAdd
+        
         try:
             cache, exists = np.load(cache_path, allow_pickle=True).item(), True  # load dict
             assert cache['version'] == self.cache_version  # matches current version
@@ -602,7 +618,8 @@ class LoadImagesAndLabels(Dataset):
                         f"{'caching images ✅' if cache else 'not caching images ⚠️'}")
         return cache
 
-    def cache_labels(self, path=Path('./labels.cache'), prefix=''):
+    # def cache_labels(self, path=Path('./labels.cache'), prefix=''):
+    def cache_labels(self, path=Path('/kaggle/working/yolov5-6.2/data/cache/labels.cache'), prefix=''):
         # Cache dataset labels, check images and read shapes
         x = {}  # dict
         nm, nf, ne, nc, msgs = 0, 0, 0, 0, []  # number missing, found, empty, corrupt, messages
